@@ -3,9 +3,9 @@ import pandas as pd
 
 # 1. BASE DE DATOS (Se mantiene interna)
 tarifas = {
-    'Bogotá': {'Van': 180000, 'Sencillo': 280000, 'Turbo': 350000, 'Auxiliar': 65000, 'Cap_Max': 35},
-    'Medellín': {'Van': 195000, 'Sencillo': 300000, 'Turbo': 380000, 'Auxiliar': 70000, 'Cap_Max': 35},
-    'Cali': {'Van': 175000, 'Sencillo': 270000, 'Turbo': 340000, 'Auxiliar': 62000, 'Cap_Max': 35}
+    'SBO1': {'Small Van': 231100, 'NHR': 303000, 'Turbo': 350000, 'Auxiliar': 62900, 'Cap_Max': 35},
+    'SAN1': {'Van': 245000, 'NHR': 303000, 'Turbo': 350000, 'Auxiliar': 62900, 'Cap_Max': 35},
+    'SAV1': {'Van': 245000, 'NHR': 303000, 'Turbo': 350000, 'Auxiliar': 62900, 'Cap_Max': 35}
 }
 
 # CONFIGURACIÓN DE LA INTERFAZ
@@ -18,7 +18,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     ciudad = st.selectbox("Selecciona la Ciudad", list(tarifas.keys()))
-    vehiculo = st.selectbox("Selecciona el Vehículo", ['Van', 'Sencillo', 'Turbo'])
+    vehiculo = st.selectbox("Selecciona el Vehículo", ['Small Van', 'NHR', 'Turbo'])
 
 with col2:
     spr = st.number_input("Ingresa el SPR (Paquetes)", min_value=1, value=30)
