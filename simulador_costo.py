@@ -43,7 +43,7 @@ if spr > datos['Cap_Max']:
     st.error(f"⚠️ El SPR de {spr} supera la capacidad máxima de la {vehiculo} ({datos['Cap_Max']})")
 
 # Tabla de sensibilidad interactiva
-with st.expander("Ver análisis de rentabilidad (Variación de SPR)"):
+with st.expander("Variación de SPR"):
     tabla = []
     for s in [spr-5, spr, spr+5, spr+10]:
         if s > 0:
