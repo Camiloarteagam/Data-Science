@@ -1,12 +1,13 @@
 import streamlit as st
 import pandas as pd
 
-# 1. BASE DE DATOS (Se mantiene interna)
+# 1. BASE DE DATOS
 tarifas = {
     'SBO1': {'Small Van': 231100, 'NHR': 303000, 'Turbo': 350000, 'Auxiliar': 62900, 'Cap_Max': 35},
     'SAN1': {'Small Van': 245000, 'NHR': 303000, 'Turbo': 350000, 'Auxiliar': 62900, 'Cap_Max': 35},
     'SAV1': {'Small Van': 245000, 'NHR': 303000, 'Turbo': 350000, 'Auxiliar': 62900, 'Cap_Max': 35}
 }
+
 
 # CONFIGURACIÓN DE LA INTERFAZ
 st.set_page_config(page_title="Simulador Logístico", layout="centered")
