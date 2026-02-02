@@ -175,4 +175,3 @@ st.info("💡 **Tip Pro:** La descarga genera una imagen limpia. Si quieres que 
 
 **Nota técnica**: He ajustado el tamaño de la imagen automáticamente según la cantidad de artistas que haya ese día para que no se vea aplastada.
 
-¿Te gustaría que le añada algún color específico a cada escenario en la imagen descargable?
