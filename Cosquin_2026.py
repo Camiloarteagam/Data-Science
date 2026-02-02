@@ -164,14 +164,7 @@ edited_df = st.data_editor(
     height=600
 )
 
-st.info("💡 **Tip Pro:** La descarga genera una imagen limpia. Si quieres que incluya tus ediciones del cuadro de arriba, te recomiendo hacer una captura de pantalla normal.")
 
----
 
-### ¿Cómo funciona esta opción?
-1.  **Matplotlib**: Crea una figura de Python "atrás de escena".
-2.  **Buffer de memoria**: En lugar de guardar un archivo en el disco (que a veces falla en la nube), guarda la imagen en la memoria RAM (`io.BytesIO`).
-3.  **Download Button**: Streamlit toma ese pedazo de memoria y se lo entrega al navegador como un archivo `.png` descargable.
 
-**Nota técnica**: He ajustado el tamaño de la imagen automáticamente según la cantidad de artistas que haya ese día para que no se vea aplastada.
 
