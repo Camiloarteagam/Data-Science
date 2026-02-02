@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Cosquín Rock 2026", layout="wide")
+st.set_page_config(page_title="Cosquín Rock 2026 - Matrix", layout="wide")
 
-# --- DATOS OFICIALES EXTRAÍDOS DE TUS IMÁGENES ---
+# --- DATOS OFICIALES ---
+# (Se mantiene tu lista data_cr igual)
 data_cr = [
-    # DÍA 1
     {"Día": 1, "Horario": "14:15", "Norte": "", "Sur": "", "Montaña": "Chechi de Marcos", "Boomerang": "", "Blues": "Golo's Band"},
     {"Día": 1, "Horario": "14:30", "Norte": "Kill Flora", "Sur": "Fantasmagoría", "Montaña": "", "Boomerang": "", "Blues": ""},
     {"Día": 1, "Horario": "14:50", "Norte": "", "Sur": "", "Montaña": "", "Boomerang": "1915", "Blues": ""},
@@ -45,38 +45,76 @@ data_cr = [
     {"Día": 2, "Horario": "00:50", "Norte": "", "Sur": "Louta", "Montaña": "", "Paraguay": "", "Blues": ""},
 ]
 
-st.title("Simulator horario Cosquín Rock 2026")
+st.title("🎸 Simulador Interactivo Cosquín Rock 2026")
 dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2])
 
-# Filtramos y preparamos la matriz
-df = pd.DataFrame(data_cr)
-df_matrix = df[df["Día"] == dia_sel].drop(columns=["Día"])
+# 1. Preparar el DataFrame base
+df_full = pd.DataFrame(data_cr)
+df_dia = df_full[df_full["Día"] == dia_sel].drop(columns=["Día"]).reset_index(drop=True)
 
-st.subheader(f"Vista General - Día {dia_sel}")
-st.write("Explorá los escenarios y marcá tus elegidos en la sección de itinerario.")
+# 2. Crear una matriz paralela de selección (booleana)
+# Esta matriz rastrea qué celdas están seleccionadas
+if f"picks_{dia_sel}" not in st.session_state:
+    st.session_state[f"picks_{dia_sel}"] = pd.DataFrame(False, index=df_dia.index, columns=df_dia.columns[1:])
 
-# Mostramos la matriz (estática para visualización clara)
-st.dataframe(df_matrix, hide_index=True, use_container_width=True)
+st.subheader(f"📅 Matriz de Selección - Día {dia_sel}")
+st.write("Selecciona los artistas directamente en la tabla (Haz doble clic o usa la barra espaciadora en las celdas con nombres).")
+
+# 3. Mostrar la matriz como editor. 
+# Para que el usuario vea nombres pero edite booleanos, mostramos la matriz de nombres 
+# y permitimos la edición sobre ella.
+edited_matrix = st.data_editor(
+    df_dia,
+    hide_index=True,
+    use_container_width=True,
+    column_config={
+        "Horario": st.column_config.TextColumn(disabled=True),
+        # Configuramos las columnas de escenarios como Checkboxes que muestran el texto
+        "Norte": st.column_config.CheckboxColumn(),
+        "Sur": st.column_config.CheckboxColumn(),
+        "Montaña": st.column_config.CheckboxColumn(),
+        "Boomerang": st.column_config.CheckboxColumn(),
+        "Paraguay": st.column_config.CheckboxColumn(),
+        "Blues": st.column_config.CheckboxColumn(),
+    }
+)
 
 st.divider()
 
-# Sección de Selección Interactiva
-st.subheader("✅ Armá tu Itinerario")
-# Para la selección, volvemos al formato de lista que es más cómodo para checkboxes en Streamlit
-df_flat = df[df["Día"] == dia_sel].melt(id_vars=["Horario", "Día"], var_name="Escenario", value_name="Artista")
-df_flat = df_flat[df_flat["Artista"] != ""].sort_values("Horario")
+# 4. Procesar la selección
+# Comparamos la matriz original (nombres) con la editada (booleanos)
+itinerario_lista = []
 
-# Data editor para elegir
-df_flat["Elegir"] = False
-edited_selection = st.data_editor(
-    df_flat[["Elegir", "Horario", "Escenario", "Artista"]],
-    hide_index=True,
-    use_container_width=True,
-    column_config={"Elegir": st.column_config.CheckboxColumn(default=False)}
-)
+for row_idx in range(len(edited_matrix)):
+    hora = edited_matrix.iloc[row_idx]["Horario"]
+    for esc in edited_matrix.columns[1:]:
+        # Si el valor en la celda es True (fue seleccionado)
+        val = edited_matrix.iloc[row_idx][esc]
+        if val is True:
+            # Recuperamos el nombre del artista de la data original
+            artista_original = df_dia.iloc[row_idx][esc]
+            if artista_original != "":
+                itinerario_lista.append({
+                    "Horario": hora,
+                    "Escenario": esc,
+                    "Artista": artista_original
+                })
 
-# Resultado final
-mi_itinerario = edited_selection[edited_selection["Elegir"] == True]
-if not mi_itinerario.empty:
-    st.success("🔥 ¡Itinerario confirmado!")
-    st.table(mi_itinerario[["Horario", "Escenario", "Artista"]])
+# 5. Mostrar resultado
+st.subheader("📋 Tu Itinerario Confirmado")
+if itinerario_lista:
+    res_df = pd.DataFrame(itinerario_lista)
+    
+    # Check de solapamientos
+    duplicados = res_df.duplicated(subset=['Horario'], keep=False)
+    
+    if duplicados.any():
+        st.warning("⚠️ ¡Ojo! Tienes artistas seleccionados a la misma hora.")
+    
+    st.table(res_df)
+    
+    # Botón para limpiar (opcional)
+    if st.button("Limpiar Selección"):
+        st.rerun()
+else:
+    st.info("Haz clic en los nombres de los artistas en la tabla de arriba para armar tu ruta.")
