@@ -45,7 +45,7 @@ data_cr = [
     {"Día": 2, "Horario": "00:50", "Norte": "", "Sur": "Louta", "Montaña": "", "Paraguay": "", "Blues": ""},
 ]
 
-st.title("🎸 Matrix Simulator: Cosquín Rock 2026")
+st.title("Simulator horario Cosquín Rock 2026")
 dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2])
 
 # Filtramos y preparamos la matriz
