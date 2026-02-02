@@ -1,111 +1,116 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime, timedelta
 
 # Configuración de la interfaz
-st.set_page_config(page_title="Simulador Cosquín Rock 2026", page_icon="🎸", layout="centered")
+st.set_page_config(page_title="Simulador CR2026", page_icon="🎸", layout="wide")
 
-# --- BASE DE DATOS OFICIAL (Basada en tus imágenes) ---
+# --- BASE DE DATOS COMPLETA (Basada en tus imágenes) ---
 data = [
-    # DÍA 1 - SÁBADO 14
-    {"dia": 1, "escenario": "Norte", "artista": "Kill Flora", "inicio": "14:30"},
-    {"dia": 1, "escenario": "Norte", "artista": "Eruca Sativa", "inicio": "15:20"},
-    {"dia": 1, "escenario": "Norte", "artista": "El Zar", "inicio": "16:30"},
-    {"dia": 1, "escenario": "Norte", "artista": "Turf", "inicio": "17:50"},
-    {"dia": 1, "escenario": "Norte", "artista": "Dillom", "inicio": "19:30"},
-    {"dia": 1, "escenario": "Norte", "artista": "Babasónicos", "inicio": "21:20"},
-    {"dia": 1, "escenario": "Norte", "artista": "Lali", "inicio": "23:20"},
-    {"dia": 1, "escenario": "Norte", "artista": "Caligaris", "inicio": "00:40"},
+    # DÍA 1
+    {"Día": 1, "Horario": "14:15", "Escenario": "Montaña", "Artista": "Chechi de Marcos"},
+    {"Día": 1, "Horario": "14:15", "Escenario": "Blues", "Artista": "Golo's Band"},
+    {"Día": 1, "Horario": "14:30", "Escenario": "Norte", "Artista": "Kill Flora"},
+    {"Día": 1, "Horario": "14:30", "Escenario": "Sur", "Artista": "Fantasmagoría"},
+    {"Día": 1, "Horario": "14:50", "Escenario": "Boomerang", "Artista": "1915"},
+    {"Día": 1, "Horario": "15:00", "Escenario": "Montaña", "Artista": "Ryan"},
+    {"Día": 1, "Horario": "15:20", "Escenario": "Norte", "Artista": "Eruca Sativa"},
+    {"Día": 1, "Horario": "15:20", "Escenario": "Sur", "Artista": "La Mississippi"},
+    {"Día": 1, "Horario": "15:50", "Escenario": "Montaña", "Artista": "Bersuit Vergarabat"},
+    {"Día": 1, "Horario": "16:30", "Escenario": "Norte", "Artista": "El Zar"},
+    {"Día": 1, "Horario": "16:30", "Escenario": "Sur", "Artista": "Emi"},
+    {"Día": 1, "Horario": "17:10", "Escenario": "Montaña", "Artista": "Marilina Bertoldi"},
+    {"Día": 1, "Horario": "17:50", "Escenario": "Norte", "Artista": "Turf"},
+    {"Día": 1, "Horario": "17:50", "Escenario": "Sur", "Artista": "Cruzando el Charco"},
+    {"Día": 1, "Horario": "18:40", "Escenario": "Montaña", "Artista": "El Kuelgue"},
+    {"Día": 1, "Horario": "19:30", "Escenario": "Norte", "Artista": "Dillom"},
+    {"Día": 1, "Horario": "19:40", "Escenario": "Sur", "Artista": "Ciro y Los Persas"},
+    {"Día": 1, "Horario": "20:40", "Escenario": "Montaña", "Artista": "Cuarteto de Nos"},
+    {"Día": 1, "Horario": "20:40", "Escenario": "Boomerang", "Artista": "Abel Pintos"},
+    {"Día": 1, "Horario": "21:20", "Escenario": "Norte", "Artista": "Babasónicos"},
+    {"Día": 1, "Horario": "21:40", "Escenario": "Sur", "Artista": "La Vela Puerca"},
+    {"Día": 1, "Horario": "22:40", "Escenario": "Montaña", "Artista": "Franz Ferdinand"},
+    {"Día": 1, "Horario": "23:20", "Escenario": "Norte", "Artista": "Lali"},
+    {"Día": 1, "Horario": "23:20", "Escenario": "Sur", "Artista": "Las Pelotas"},
+    {"Día": 1, "Horario": "00:00", "Escenario": "Montaña", "Artista": "The Chemical Brothers"},
+    {"Día": 1, "Horario": "00:40", "Escenario": "Norte", "Artista": "Caligaris"},
+    {"Día": 1, "Horario": "00:40", "Escenario": "Sur", "Artista": "Viejas Locas x Fachi y Abel"},
     
-    {"dia": 1, "escenario": "Sur", "artista": "Fantasmagoría", "inicio": "14:30"},
-    {"dia": 1, "escenario": "Sur", "artista": "La Mississippi", "inicio": "15:20"},
-    {"dia": 1, "escenario": "Sur", "artista": "Emi", "inicio": "16:30"},
-    {"dia": 1, "escenario": "Sur", "artista": "Cruzando el Charco", "inicio": "17:50"},
-    {"dia": 1, "escenario": "Sur", "artista": "Ciro y Los Persas", "inicio": "19:40"},
-    {"dia": 1, "escenario": "Sur", "artista": "La Vela Puerca", "inicio": "21:40"},
-    {"dia": 1, "escenario": "Sur", "artista": "Las Pelotas", "inicio": "23:20"},
-    {"dia": 1, "escenario": "Sur", "artista": "Viejas Locas x Fachi y Abel", "inicio": "00:40"},
-    
-    {"dia": 1, "escenario": "Montaña", "artista": "Chechi de Marcos", "inicio": "14:15"},
-    {"dia": 1, "escenario": "Montaña", "artista": "Ryan", "inicio": "15:00"},
-    {"dia": 1, "escenario": "Montaña", "artista": "Bersuit Vergarabat", "inicio": "15:50"},
-    {"dia": 1, "escenario": "Montaña", "artista": "Marilina Bertoldi", "inicio": "17:10"},
-    {"dia": 1, "escenario": "Montaña", "artista": "El Kuelgue", "inicio": "18:40"},
-    {"dia": 1, "escenario": "Montaña", "artista": "Cuarteto de Nos", "inicio": "20:40"},
-    {"dia": 1, "escenario": "Montaña", "artista": "Franz Ferdinand", "inicio": "22:40"},
-    {"dia": 1, "escenario": "Montaña", "artista": "The Chemical Brothers (DJ Set)", "inicio": "00:00"},
-    
-    # DÍA 2 - DOMINGO 15
-    {"dia": 2, "escenario": "Norte", "artista": "Sofi Mora", "inicio": "14:30"},
-    {"dia": 2, "escenario": "Norte", "artista": "Blair", "inicio": "15:20"},
-    {"dia": 2, "escenario": "Norte", "artista": "Gauchito Club", "inicio": "16:30"},
-    {"dia": 2, "escenario": "Norte", "artista": "Bandalos Chinos", "inicio": "17:50"},
-    {"dia": 2, "escenario": "Norte", "artista": "Fito Páez", "inicio": "19:10"},
-    {"dia": 2, "escenario": "Norte", "artista": "Airbag", "inicio": "20:55"},
-    {"dia": 2, "escenario": "Norte", "artista": "YSY A", "inicio": "23:00"},
-    {"dia": 2, "escenario": "Norte", "artista": "Caras Extrañas", "inicio": "00:20"},
-    
-    {"dia": 2, "escenario": "Sur", "artista": "Ainda", "inicio": "14:20"},
-    {"dia": 2, "escenario": "Sur", "artista": "Kapanga", "inicio": "15:10"},
-    {"dia": 2, "escenario": "Sur", "artista": "Pappo x Juanse", "inicio": "16:25"},
-    {"dia": 2, "escenario": "Sur", "artista": "El Plan de la Mariposa", "inicio": "17:45"},
-    {"dia": 2, "escenario": "Sur", "artista": "Divididos", "inicio": "19:40"},
-    {"dia": 2, "escenario": "Sur", "artista": "Trueno", "inicio": "21:30"},
-    {"dia": 2, "escenario": "Sur", "artista": "Guasones", "inicio": "23:10"},
-    {"dia": 2, "escenario": "Sur", "artista": "Louta", "inicio": "00:50"},
-
-    {"dia": 2, "escenario": "Montaña", "artista": "Renzo Leali", "inicio": "14:30"},
-    {"dia": 2, "escenario": "Montaña", "artista": "Beats Modernos", "inicio": "15:00"},
-    {"dia": 2, "escenario": "Montaña", "artista": "Gustavo Cordera", "inicio": "15:50"},
-    {"dia": 2, "escenario": "Montaña", "artista": "Los Pericos", "inicio": "17:00"},
-    {"dia": 2, "escenario": "Montaña", "artista": "Silvestre y La Naranja", "inicio": "18:30"},
-    {"dia": 2, "escenario": "Montaña", "artista": "Morat", "inicio": "20:20"},
-    {"dia": 2, "escenario": "Montaña", "artista": "Las Pastillas del Abuelo", "inicio": "22:20"},
-    {"dia": 2, "escenario": "Montaña", "artista": "Peces Raros", "inicio": "00:00"},
-    {"dia": 2, "escenario": "Montaña", "artista": "Mariano Mellino", "inicio": "01:00"},
+    # DÍA 2
+    {"Día": 2, "Horario": "14:20", "Escenario": "Sur", "Artista": "Ainda"},
+    {"Día": 2, "Horario": "14:20", "Escenario": "Paraguay", "Artista": "Wanda Jael"},
+    {"Día": 2, "Horario": "14:30", "Escenario": "Norte", "Artista": "Sofi Mora"},
+    {"Día": 2, "Horario": "14:30", "Escenario": "Montaña", "Artista": "Renzo Leali"},
+    {"Día": 2, "Horario": "15:10", "Escenario": "Sur", "Artista": "Kapanga"},
+    {"Día": 2, "Horario": "15:20", "Escenario": "Norte", "Artista": "Blair"},
+    {"Día": 2, "Horario": "15:50", "Escenario": "Montaña", "Artista": "Gustavo Cordera"},
+    {"Día": 2, "Horario": "16:25", "Escenario": "Sur", "Artista": "Pappo x Juanse"},
+    {"Día": 2, "Horario": "16:30", "Escenario": "Norte", "Artista": "Gauchito Club"},
+    {"Día": 2, "Horario": "17:00", "Escenario": "Montaña", "Artista": "Los Pericos"},
+    {"Día": 2, "Horario": "17:45", "Escenario": "Sur", "Artista": "El Plan de la Mariposa"},
+    {"Día": 2, "Horario": "17:50", "Escenario": "Norte", "Artista": "Bandalos Chinos"},
+    {"Día": 2, "Horario": "18:20", "Escenario": "Paraguay", "Artista": "Devendra Banhart"},
+    {"Día": 2, "Horario": "18:30", "Escenario": "Montaña", "Artista": "Silvestre y La Naranja"},
+    {"Día": 2, "Horario": "19:10", "Escenario": "Norte", "Artista": "Fito Páez"},
+    {"Día": 2, "Horario": "19:40", "Escenario": "Sur", "Artista": "Divididos"},
+    {"Día": 2, "Horario": "20:20", "Escenario": "Montaña", "Artista": "Morat"},
+    {"Día": 2, "Horario": "20:30", "Escenario": "Paraguay", "Artista": "Marky Ramone"},
+    {"Día": 2, "Horario": "20:55", "Escenario": "Norte", "Artista": "Airbag"},
+    {"Día": 2, "Horario": "21:30", "Escenario": "Sur", "Artista": "Trueno"},
+    {"Día": 2, "Horario": "21:35", "Escenario": "Paraguay", "Artista": "David Ellefson"},
+    {"Día": 2, "Horario": "22:20", "Escenario": "Montaña", "Artista": "Las Pastillas del Abuelo"},
+    {"Día": 2, "Horario": "23:00", "Escenario": "Norte", "Artista": "YSY A"},
+    {"Día": 2, "Horario": "23:10", "Escenario": "Sur", "Artista": "Guasones"},
+    {"Día": 2, "Horario": "00:00", "Escenario": "Montaña", "Artista": "Peces Raros"},
+    {"Día": 2, "Horario": "00:20", "Escenario": "Norte", "Artista": "Caras Extrañas"},
+    {"Día": 2, "Horario": "00:50", "Escenario": "Sur", "Artista": "Louta"},
 ]
 
-# --- LÓGICA DE LA APP ---
-st.title("🎸 Cosquín Rock 2026 - Simulador")
-st.markdown("Crea tu itinerario y detecta si se te pisan las bandas.")
+st.title("🎸 Simulador de Itinerario Cosquín Rock 2026")
+st.markdown("Seleccioná tus artistas en la tabla y armá tu hoja de ruta personalizada.")
 
-dia = st.sidebar.radio("Selecciona el día:", [1, 2], format_func=lambda x: f"Día {x} (Sábado)" if x==1 else f"Día {x} (Domingo)")
+# Filtro de día
+dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2], format_func=lambda x: f"Día {x}")
 
-# Filtrar datos por día
+# Procesar DataFrame
 df = pd.DataFrame(data)
-df_dia = df[df['dia'] == dia].sort_values(by="inicio")
+df_display = df[df["Día"] == dia_sel].copy()
+df_display["Ir a ver"] = False # Columna para el checkbox
 
-# Multiselect de artistas
-opciones = df_dia.apply(lambda x: f"{x['inicio']} - {x['artista']} [{x['escenario']}]", axis=1).tolist()
-seleccion = st.multiselect("Elige los shows que quieres ver:", opciones)
+# --- FRONT: SELECCIÓN EN TABLA ---
+st.subheader(f"Grilla Horaria - Día {dia_sel}")
+# Usamos data_editor para permitir la selección por checkbox
+edited_df = st.data_editor(
+    df_display,
+    column_config={
+        "Ir a ver": st.column_config.CheckboxColumn(default=False),
+        "Horario": st.column_config.TextColumn(width="small"),
+        "Día": None # Ocultamos la columna día
+    },
+    disabled=["Horario", "Escenario", "Artista"],
+    hide_index=True,
+    use_container_width=True
+)
 
-if seleccion:
-    st.subheader("📅 Tu Itinerario")
+# --- LÓGICA DE ITINERARIO ---
+seleccionados = edited_df[edited_df["Ir a ver"] == True].sort_values("Horario")
+
+if not seleccionados.empty:
+    st.divider()
+    st.header("📋 Tu Itinerario Final")
     
-    # Procesar selección para detectar choques
-    itinerario = []
-    for item in seleccion:
-        hora_str = item.split(" - ")[0]
-        nombre = item.split(" - ")[1]
-        itinerario.append({"hora": hora_str, "info": nombre})
+    # Agrupamos por horario para detectar cruces
+    for horario, grupo in seleccionados.groupby("Horario"):
+        with st.container():
+            col1, col2 = st.columns([1, 4])
+            col1.metric("Hora", horario)
+            
+            for _, row in grupo.iterrows():
+                # Si hay más de un artista a la misma hora, mostrar alerta de cruce
+                if len(grupo) > 1:
+                    col2.error(f"⚠️ **CRUCE:** {row['Artista']} en el escenario {row['Escenario']}")
+                else:
+                    col2.success(f"✅ **{row['Artista']}** ({row['Escenario']})")
     
-    # Ordenar por hora
-    itinerario.sort(key=lambda x: x['hora'])
-
-    # Mostrar con advertencias si hay colisión
-    for i in range(len(itinerario)):
-        col1, col2 = st.columns([1, 4])
-        col1.write(f"**{itinerario[i]['hora']}**")
-        
-        # Si la hora es igual a la anterior, mostrar alerta
-        if i > 0 and itinerario[i]['hora'] == itinerario[i-1]['hora']:
-            col2.error(f"⚠️ CONFLICTO: {itinerario[i]['info']}")
-        else:
-            col2.success(itinerario[i]['info'])
-
-    st.info("💡 Consejo: Recuerda que caminar entre escenarios Norte y Sur puede llevarte hasta 15 minutos.")
+    st.caption("Nota: Los horarios son estimativos según la grilla oficial compartida en Instagram.")
 else:
-    st.warning("Selecciona al menos un artista para empezar.")
-
-st.sidebar.markdown("---")
-st.sidebar.write("Desarrollado para el Cosquín Rock 2026")
+    st.info("Hacé clic en los casilleros de la tabla para armar tu cronograma.")
