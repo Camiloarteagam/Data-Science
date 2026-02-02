@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(Cosquín Rock 2026", layout="wide")
+st.set_page_config(page_title=Cosquín Rock 2026", layout="wide")
 
 # --- DATOS OFICIALES EXTRAÍDOS DE TUS IMÁGENES ---
 data_cr = [
