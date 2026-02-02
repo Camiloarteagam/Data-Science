@@ -1,101 +1,89 @@
 import streamlit as st
 import pandas as pd
+import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Simulador Cosquín Rock 2026", layout="wide")
+st.set_page_config(page_title="Itinerario CR2026", layout="wide")
 
-# --- BASE DE DATOS COMPLETA (Día 1 y 2) ---
+# --- DATA COMPLETA ---
 data_cr = [
     # DÍA 1
-    {"Día": 1, "Horario": "14:15", "Escenario": "Montaña", "Artista": "Chechi de Marcos"},
-    {"Día": 1, "Horario": "14:15", "Escenario": "La Casita del Blues", "Artista": "Golo's Band"},
-    {"Día": 1, "Horario": "14:30", "Escenario": "Norte", "Artista": "Kill Flora"},
-    {"Día": 1, "Horario": "14:30", "Escenario": "Sur", "Artista": "Fantasmagoría"},
-    {"Día": 1, "Horario": "14:50", "Escenario": "Boomerang", "Artista": "1915"},
-    {"Día": 1, "Horario": "15:20", "Escenario": "Norte", "Artista": "Eruca Sativa"},
-    {"Día": 1, "Horario": "15:20", "Escenario": "Sur", "Artista": "La Mississippi"},
-    {"Día": 1, "Horario": "16:30", "Escenario": "Norte", "Artista": "El Zar"},
-    {"Día": 1, "Horario": "16:30", "Escenario": "Sur", "Artista": "Emi"},
-    {"Día": 1, "Horario": "16:30", "Escenario": "Boomerang", "Artista": "Girl Ultra"},
-    {"Día": 1, "Horario": "17:50", "Escenario": "Norte", "Artista": "Turf"},
-    {"Día": 1, "Horario": "17:50", "Escenario": "Sur", "Artista": "Cruzando el Charco"},
-    {"Día": 1, "Horario": "19:30", "Escenario": "Norte", "Artista": "Dillom"},
-    {"Día": 1, "Horario": "19:40", "Escenario": "Sur", "Artista": "Ciro y Los Persas"},
-    {"Día": 1, "Horario": "20:40", "Escenario": "Montaña", "Artista": "Cuarteto de Nos"},
-    {"Día": 1, "Horario": "20:40", "Escenario": "Boomerang", "Artista": "Abel Pintos"},
-    {"Día": 1, "Horario": "21:20", "Escenario": "Norte", "Artista": "Babasónicos"},
-    {"Día": 1, "Horario": "21:40", "Escenario": "Sur", "Artista": "La Vela Puerca"},
-    {"Día": 1, "Horario": "23:20", "Escenario": "Norte", "Artista": "Lali"},
-    {"Día": 1, "Horario": "23:20", "Escenario": "Sur", "Artista": "Las Pelotas"},
-    {"Día": 1, "Horario": "00:00", "Escenario": "Montaña", "Artista": "The Chemical Brothers"},
-    {"Día": 1, "Horario": "00:40", "Escenario": "Norte", "Artista": "Caligaris"},
-    {"Día": 1, "Horario": "00:40", "Escenario": "Sur", "Artista": "Viejas Locas x Fachi y Abel"},
+    {"Día": 1, "Horario": "14:15", "Norte": "", "Sur": "", "Montaña": "Chechi de Marcos", "Boomerang": "Microtul", "Paraguay": "", "La Casita del Blues": "Golo's Band"},
+    {"Día": 1, "Horario": "14:30", "Norte": "Kill Flora", "Sur": "Fantasmagoría", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "15:20", "Norte": "Eruca Sativa", "Sur": "La Mississippi", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "16:30", "Norte": "El Zar", "Sur": "Emi", "Montaña": "", "Boomerang": "Girl Ultra", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "17:50", "Norte": "Turf", "Sur": "Cruzando el Charco", "Montaña": "", "Boomerang": "Hermanos Gutiérrez", "Paraguay": "", "La Casita del Blues": "Perro Suizo"},
+    {"Día": 1, "Horario": "19:30", "Norte": "Dillom", "Sur": "", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "19:40", "Norte": "", "Sur": "Ciro y Los Persas", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "20:40", "Norte": "", "Sur": "", "Montaña": "Cuarteto de Nos", "Boomerang": "Abel Pintos", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "21:20", "Norte": "Babasónicos", "Sur": "", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "21:40", "Norte": "", "Sur": "La Vela Puerca", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "23:20", "Norte": "Lali", "Sur": "Las Pelotas", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 1, "Horario": "00:40", "Norte": "Caligaris", "Sur": "Viejas Locas", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
     # DÍA 2
-    {"Día": 2, "Horario": "14:30", "Escenario": "Norte", "Artista": "Sofi Mora"},
-    {"Día": 2, "Horario": "15:10", "Escenario": "Sur", "Artista": "Kapanga"},
-    {"Día": 2, "Horario": "15:10", "Escenario": "Paraguay", "Artista": "T&K"},
-    {"Día": 2, "Horario": "16:30", "Escenario": "Norte", "Artista": "Gauchito Club"},
-    {"Día": 2, "Horario": "17:50", "Escenario": "Norte", "Artista": "Bándalos Chinos"},
-    {"Día": 2, "Horario": "19:10", "Escenario": "Norte", "Artista": "Fito Páez"},
-    {"Día": 2, "Horario": "19:40", "Escenario": "Sur", "Artista": "Divididos"},
-    {"Día": 2, "Horario": "19:40", "Escenario": "Montaña", "Artista": "Nicki Nicole"},
-    {"Día": 2, "Horario": "20:55", "Escenario": "Norte", "Artista": "Airbag"},
-    {"Día": 2, "Horario": "21:30", "Escenario": "Sur", "Artista": "Trueno"},
-    {"Día": 2, "Horario": "22:40", "Escenario": "Montaña", "Artista": "Deadmau5"},
-    {"Día": 2, "Horario": "23:00", "Escenario": "Norte", "Artista": "YSY A"},
-    {"Día": 2, "Horario": "00:50", "Escenario": "Sur", "Artista": "Louta"},
+    {"Día": 2, "Horario": "14:30", "Norte": "Sofi Mora", "Sur": "", "Montaña": "Renzo Leali", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "15:10", "Norte": "", "Sur": "Kapanga", "Montaña": "", "Boomerang": "", "Paraguay": "T&K", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "16:30", "Norte": "Gauchito Club", "Sur": "Pappo x Juanse", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "17:50", "Norte": "Bándalos Chinos", "Sur": "El Plan de la Mariposa", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "19:10", "Norte": "Fito Páez", "Sur": "", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "19:40", "Norte": "", "Sur": "Divididos", "Montaña": "Nicki Nicole", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "20:55", "Norte": "Airbag", "Sur": "", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "21:30", "Norte": "", "Sur": "Trueno", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "22:40", "Norte": "", "Sur": "", "Montaña": "Deadmau5", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "23:00", "Norte": "YSY A", "Sur": "", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
+    {"Día": 2, "Horario": "00:50", "Norte": "", "Sur": "Louta", "Montaña": "", "Boomerang": "", "Paraguay": "", "La Casita del Blues": ""},
 ]
 
-st.title("🎸 Matrix Simulator: Cosquín Rock 2026")
+st.title("🛡️ Matrix Simulator CR2026")
+dia_sel = st.sidebar.radio("Día", [1, 2], format_func=lambda x: f"Día {x}")
 
-# 1. Selección de Día y Artistas (Lista Desplegable)
-dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2], format_func=lambda x: f"Día {x}")
+# --- MATRIZ DE SELECCIÓN ---
+df_full = pd.DataFrame(data_cr)
+df_dia = df_full[df_full["Día"] == dia_sel].drop(columns=["Día"]).reset_index(drop=True)
+escenarios = [c for c in df_dia.columns if c != "Horario"]
 
-df = pd.DataFrame(data_cr)
-df_dia = df[df["Día"] == dia_sel].sort_values("Horario")
+# Estado de selección
+if f"picks_{dia_sel}" not in st.session_state:
+    st.session_state[f"picks_{dia_sel}"] = pd.DataFrame(False, index=df_dia.index, columns=escenarios)
 
-# Generamos las opciones para la lista desplegable
-opciones = df_dia.apply(lambda x: f"{x['Horario']} - {x['Artista']} ({x['Escenario']})", axis=1).tolist()
+st.subheader("1. Marcá tus artistas en la matriz")
+selector_df = pd.concat([df_dia[["Horario"]], st.session_state[f"picks_{dia_sel}"]], axis=1)
 
-st.subheader("✅ 1. Seleccioná tus artistas favoritos")
-seleccion = st.multiselect(
-    "Escribí o buscá las bandas que querés ver:",
-    options=opciones,
-    placeholder="Ej: La Vela Puerca, Babasónicos..."
+edited_df = st.data_editor(
+    selector_df,
+    hide_index=True,
+    use_container_width=True,
+    column_config={
+        "Horario": st.column_config.TextColumn(disabled=True),
+        **{esc: st.column_config.CheckboxColumn(label=esc) for esc in escenarios}
+    }
 )
 
-# 2. Procesamiento del Resultado
-if seleccion:
+# --- CONSTRUCCIÓN DEL ITINERARIO ---
+itinerario_data = []
+for idx, row in edited_df.iterrows():
+    for esc in escenarios:
+        if row[esc]:
+            artista = df_dia.loc[idx, esc]
+            if artista:
+                itinerario_data.append({"Horario": row["Horario"], "Escenario": esc, "Artista": artista})
+
+# --- MOSTRAR RESULTADO Y BOTÓN DESCARGA ---
+if itinerario_data:
     st.divider()
-    st.subheader("📋 2. Tu Itinerario en Formato Matriz")
+    st.subheader("📋 2. Tu Itinerario (Listo para Capturar)")
     
-    # Extraemos los datos de la selección
-    data_itinerario = []
-    for s in seleccion:
-        hora_banda, esc_raw = s.split(" (")
-        hora, banda = hora_banda.split(" - ")
-        esc = esc_raw.replace(")", "")
-        data_itinerario.append({"Horario": hora, "Escenario": esc, "Artista": banda})
+    # Crear la matriz final de resultados
+    res_df = pd.DataFrame(itinerario_data)
+    matriz_final = res_df.pivot(index="Horario", columns="Escenario", values="Artista").fillna("-")
     
-    # Creamos un DataFrame con los seleccionados
-    res_df = pd.DataFrame(data_itinerario)
+    # Mostrar tabla estilizada
+    st.table(matriz_final)
+
+    # Botón de "Descarga" (Instrucción manual para capturar)
+    st.info("📸 **Tip:** Para llevarlo al festival, saca una captura de pantalla a la tabla de arriba. ¡Es la forma más rápida y no consume batería!")
     
-    # Pivotamos para crear la matriz: Horario en Filas, Escenario en Columnas
-    try:
-        matriz_final = res_df.pivot(index="Horario", columns="Escenario", values="Artista").fillna("")
-        
-        # Reordenar columnas para que siempre sigan un orden lógico
-        orden_escenarios = ["Norte", "Sur", "Montaña", "Boomerang", "Paraguay", "La Casita del Blues"]
-        columnas_presentes = [esc for esc in orden_escenarios if esc in matriz_final.columns]
-        matriz_final = matriz_final[columnas_presentes]
-        
-        # Mostrar la matriz resultante
-        st.table(matriz_final)
-        
-        # Alerta de choques horaria
-        if res_df["Horario"].duplicated().any():
-            st.warning("⚠️ ¡Atención! Tenés artistas que se pisan el horario en diferentes escenarios.")
-            
-    except Exception as e:
-        st.error("Hubo un error al generar la matriz. Asegurate de no haber seleccionado al mismo artista dos veces.")
+    if st.button("Generar versión para compartir"):
+        st.write("Aquí tienes tu selección lista:")
+        st.dataframe(matriz_final, use_container_width=True)
 else:
-    st.info("💡 Usá la lista desplegable arriba para empezar a armar tu ruta.")
+    st.info("Seleccioná casilleros en la matriz para generar tu hoja de ruta.")
