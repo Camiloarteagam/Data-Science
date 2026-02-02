@@ -97,7 +97,7 @@ raw_data = [
     {"Día": 2, "H": "00:50", "Esc": "Sur", "Art": "Louta"},
 ]
 
-st.title("🛡️ Matrix Definitiva Cosquín Rock 2026")
+st.title("Cosquín Rock 2026")
 dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2], format_func=lambda x: f"Día {x}")
 
 # --- CONSTRUCCIÓN DE MATRIZ ---
@@ -114,7 +114,7 @@ for item in raw_data:
 matrix_df = matrix_df.loc[(matrix_df != "").any(axis=1)]
 
 # --- FRONT END ---
-st.subheader(f"📅 Grilla Interactiva Completa - Día {dia_sel}")
+st.subheader(f"Día {dia_sel}")
 st.write("Escribí '*' o 'OK' al lado del nombre para marcar tus bandas. Los horarios respetan los desfasajes exactos.")
 
 st.data_editor(
