@@ -16,9 +16,9 @@ def generar_tiempos():
             tiempos.append(f"{dh:02d}:{m:02d}")
     return tiempos
 
-# --- DATA COMPLETA ---
+# --- DATA COMPLETA (Filtrada según tu solicitud) ---
 raw_data = [
-    # DÍA 1
+    # DÍA 1 (Se eliminó "Paraguay" - aunque no había registros en tu lista original para este escenario el día 1, queda la regla aplicada)
     {"Día": 1, "H": "14:10", "Esc": "Boomerang", "Art": "Microtul"},
     {"Día": 1, "H": "14:15", "Esc": "Montaña", "Art": "Chechi de Marcos"},
     {"Día": 1, "H": "14:15", "Esc": "La Casita del Blues", "Art": "Golo's Band"},
@@ -64,8 +64,7 @@ raw_data = [
     {"Día": 1, "H": "00:40", "Esc": "Norte", "Art": "Caligaris"},
     {"Día": 1, "H": "00:40", "Esc": "Sur", "Art": "Viejas Locas"},
 
-    # DÍA 2
-    {"Día": 2, "H": "14:15", "Esc": "La Casita del Blues", "Art": "Rosy Gomeez"},
+    # DÍA 2 (Se eliminaron "Boomerang" y "La Casita del Blues")
     {"Día": 2, "H": "14:20", "Esc": "Sur", "Art": "Ainda"},
     {"Día": 2, "H": "14:20", "Esc": "Paraguay", "Art": "Wanda Jael"},
     {"Día": 2, "H": "14:30", "Esc": "Norte", "Art": "Sofi Mora"},
@@ -123,7 +122,8 @@ def df_to_image(df, title):
     # Colorear los "OK" en verde en la imagen
     for (row, col), cell in tabla.get_celld().items():
         if row > 0: # Evitar encabezados
-            if "OK" in cell.get_text().get_text().upper():
+            text = cell.get_text().get_text().upper()
+            if "OK" in text:
                 cell.set_facecolor("#90ee90")
     
     plt.title(title, fontsize=18, pad=30, fontweight='bold', color="#ff4b4b")
@@ -139,21 +139,27 @@ st.title("🎸 Cosquín Rock 2026")
 
 dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2], format_func=lambda x: f"Día {x}")
 
+# Definir escenarios visibles dinámicamente según el día
+if dia_sel == 1:
+    escenarios = ["Norte", "Sur", "Montaña", "Boomerang", "La Casita del Blues"]
+else:
+    escenarios = ["Norte", "Sur", "Montaña", "Paraguay"]
+
 # Construcción de la matriz base
 tiempos = generar_tiempos()
-escenarios = ["Norte", "Sur", "Montaña", "Boomerang", "Paraguay", "La Casita del Blues"]
 matrix_df = pd.DataFrame("", index=tiempos, columns=escenarios)
 
 for item in raw_data:
     if item["Día"] == dia_sel:
-        if item["H"] in matrix_df.index:
+        if item["H"] in matrix_df.index and item["Esc"] in escenarios:
             matrix_df.at[item["H"], item["Esc"]] = item["Art"]
 
+# Limpiar filas vacías (donde no hay artistas en ninguno de los escenarios seleccionados)
 matrix_df = matrix_df.loc[(matrix_df != "").any(axis=1)]
 
 # --- INTERFAZ ---
-st.subheader(f"Armá tu Lineup - Día {dia_sel}")
-st.write("Escribe 'OK' junto al nombre del artista")
+st.subheader(f"Día {dia_sel}")
+st.write("Escribe 'OK' junto al nombre del artista.")
 
 # El editor usa una KEY única para que Streamlit mantenga los datos
 edited_df = st.data_editor(
@@ -172,4 +178,3 @@ st.download_button(
     file_name=f"Mi_Lineup_Cosquin_Dia_{dia_sel}.png",
     mime="image/png"
 )
-
