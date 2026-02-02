@@ -1,62 +1,96 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 
-st.set_page_config(page_title="Matrix CR2026 - 60min", layout="wide")
+st.set_page_config(page_title="Matrix CR2026", layout="wide")
 
-# --- DATA CON DURACIÓN DE 60 MINUTOS ---
-# Se define el inicio y el fin (inicio + 1h) para dimensionar el solapamiento
-data_cr = [
-    # DÍA 1
-    {"Día": 1, "Horario": "14:15", "Norte": "", "Sur": "", "Montaña": "Chechi de Marcos", "Boomerang": "Microtul", "La Casita del Blues": "Golo's Band"},
-    {"Día": 1, "Horario": "14:30", "Norte": "Kill Flora", "Sur": "Fantasmagoría", "Montaña": "", "Boomerang": "", "La Casita del Blues": ""},
-    {"Día": 1, "Horario": "15:20", "Norte": "Eruca Sativa", "Sur": "La Mississippi", "Montaña": "", "Boomerang": "", "La Casita del Blues": ""},
-    {"Día": 1, "Horario": "16:30", "Norte": "El Zar", "Sur": "Emi", "Montaña": "Bersuit (15:50)", "Boomerang": "Girl Ultra", "La Casita del Blues": ""},
-    {"Día": 1, "Horario": "17:50", "Norte": "Turf", "Sur": "Cruzando el Charco", "Montaña": "M. Bertoldi (17:10)", "Boomerang": "Hnos. Gutiérrez (17:20)", "La Casita del Blues": "Perro Suizo"},
-    {"Día": 1, "Horario": "19:30", "Norte": "Dillom", "Sur": "Ciro (19:40)", "Montaña": "El Kuelgue (18:40)", "Boomerang": "Estelares (19:20)", "La Casita del Blues": "Tango & Roll"},
-    {"Día": 1, "Horario": "21:20", "Norte": "Babasónicos", "Sur": "La Vela Puerca (21:40)", "Montaña": "Cuarteto de Nos (20:40)", "Boomerang": "Abel Pintos (20:40)", "La Casita del Blues": "Los Espíritus"},
-    {"Día": 1, "Horario": "23:20", "Norte": "Lali", "Sur": "Las Pelotas", "Montaña": "Franz Ferdinand (22:40)", "Boomerang": "Coti (23:10)", "La Casita del Blues": ""},
-    {"Día": 1, "Horario": "00:40", "Norte": "Caligaris", "Sur": "Viejas Locas", "Montaña": "Chemical Bros (00:00)", "Boomerang": "", "La Casita del Blues": ""},
-    # DÍA 2
-    {"Día": 2, "Horario": "14:30", "Norte": "Sofi Mora", "Sur": "Ainda (14:20)", "Montaña": "Renzo Leali", "Paraguay": "Wanda Jael (14:20)", "La Casita del Blues": "Rosy Gomeez"},
-    {"Día": 2, "Horario": "15:20", "Norte": "Blair", "Sur": "Kapanga (15:10)", "Montaña": "Beats Modernos (15:00)", "Paraguay": "T&K (15:10)", "La Casita del Blues": ""},
-    {"Día": 2, "Horario": "16:30", "Norte": "Gauchito Club", "Sur": "Pappo x Juanse (16:25)", "Montaña": "Gustavo Cordera (15:50)", "Paraguay": "Malandro (16:10)", "La Casita del Blues": "Rudy (15:55)"},
-    {"Día": 2, "Horario": "17:50", "Norte": "Bandalos Chinos", "Sur": "Plan de la Mariposa (17:45)", "Montaña": "Pericos (17:00)", "Paraguay": "Gauchos (17:20)", "La Casita del Blues": "Cordelia"},
-    {"Día": 2, "Horario": "19:10", "Norte": "Fito Páez", "Sur": "Divididos (19:40)", "Montaña": "Silvestre (18:30)", "Paraguay": "Devendra (18:20)", "La Casita del Blues": ""},
-    {"Día": 2, "Horario": "20:55", "Norte": "Airbag", "Sur": "Trueno (21:30)", "Montaña": "Morat (20:20)", "Paraguay": "Marky Ramone (20:30)", "La Casita del Blues": "Crystal Thomas"},
-    {"Día": 2, "Horario": "23:00", "Norte": "YSY A", "Sur": "Guasones (23:10)", "Montaña": "Pastillas (22:20)", "Paraguay": "Ellefson (21:35)", "La Casita del Blues": "Xime Monzón"},
-    {"Día": 2, "Horario": "00:20", "Norte": "Caras Extrañas", "Sur": "Louta (00:50)", "Montaña": "Peces Raros (00:00)", "Paraguay": "Club Serpiente (00:45)", "La Casita del Blues": ""}
+# --- FUNCION PARA GENERAR RANGOS DE TIEMPO REALES ---
+def generar_bloques_tiempo():
+    # Creamos una lista de tiempos desde las 14:00 hasta las 02:00 del día siguiente
+    horas = []
+    for h in range(14, 27): # Hasta las 26 para cubrir la madrugada
+        for m in [0, 10, 20, 30, 40, 50]:
+            display_h = h if h < 24 else h - 24
+            horas.append(f"{display_h:02d}:{m:02d}")
+    return horas
+
+# --- DATA UNIFICADA (Día 1 y 2) ---
+# Se organizan por su hora exacta de inicio para que el código los ubique solos
+raw_data = [
+    # DIA 1
+    {"Día": 1, "Horario": "14:10", "Escenario": "Boomerang", "Artista": "Microtul"},
+    {"Día": 1, "Horario": "14:15", "Escenario": "Montaña", "Artista": "Chechi de Marcos"},
+    {"Día": 1, "Horario": "14:15", "Escenario": "La Casita del Blues", "Artista": "Golo's Band"},
+    {"Día": 1, "Horario": "14:30", "Escenario": "Norte", "Artista": "Kill Flora"},
+    {"Día": 1, "Horario": "14:30", "Escenario": "Sur", "Artista": "Fantasmagoría"},
+    {"Día": 1, "Horario": "14:50", "Escenario": "Boomerang", "Artista": "1915"},
+    {"Día": 1, "Horario": "15:20", "Escenario": "Norte", "Artista": "Eruca Sativa"},
+    {"Día": 1, "Horario": "15:20", "Escenario": "Sur", "Artista": "La Mississippi"},
+    {"Día": 1, "Horario": "15:50", "Escenario": "Montaña", "Artista": "Bersuit Vergarabat"},
+    {"Día": 1, "Horario": "16:30", "Escenario": "Norte", "Artista": "El Zar"},
+    {"Día": 1, "Horario": "16:30", "Escenario": "Sur", "Artista": "Emi"},
+    {"Día": 1, "Horario": "17:50", "Escenario": "Norte", "Artista": "Turf"},
+    {"Día": 1, "Horario": "17:50", "Escenario": "Sur", "Artista": "Cruzando el Charco"},
+    {"Día": 1, "Horario": "19:30", "Escenario": "Norte", "Artista": "Dillom"},
+    {"Día": 1, "Horario": "19:40", "Escenario": "Sur", "Artista": "Ciro y Los Persas"},
+    {"Día": 1, "Horario": "20:40", "Escenario": "Montaña", "Artista": "Cuarteto de Nos"},
+    {"Día": 1, "Horario": "20:40", "Escenario": "Boomerang", "Artista": "Abel Pintos"},
+    {"Día": 1, "Horario": "21:20", "Escenario": "Norte", "Artista": "Babasónicos"},
+    {"Día": 1, "Horario": "21:40", "Escenario": "Sur", "Artista": "La Vela Puerca"},
+    {"Día": 1, "Horario": "23:20", "Escenario": "Norte", "Artista": "Lali"},
+    {"Día": 1, "Horario": "23:20", "Escenario": "Sur", "Artista": "Las Pelotas"},
+    {"Día": 1, "Horario": "00:00", "Escenario": "Montaña", "Artista": "Chemical Bros"},
+    {"Día": 1, "Horario": "00:40", "Escenario": "Sur", "Artista": "Viejas Locas"},
+    # DIA 2
+    {"Día": 2, "Horario": "14:20", "Escenario": "Sur", "Artista": "Ainda"},
+    {"Día": 2, "Horario": "14:30", "Escenario": "Norte", "Artista": "Sofi Mora"},
+    {"Día": 2, "Horario": "16:25", "Escenario": "Sur", "Artista": "Pappo x Juanse"},
+    {"Día": 2, "Horario": "16:30", "Escenario": "Norte", "Artista": "Gauchito Club"},
+    {"Día": 2, "Horario": "19:10", "Escenario": "Norte", "Artista": "Fito Páez"},
+    {"Día": 2, "Horario": "19:40", "Escenario": "Sur", "Artista": "Divididos"},
+    {"Día": 2, "Horario": "21:30", "Escenario": "Sur", "Artista": "Trueno"},
+    {"Día": 2, "Horario": "20:55", "Escenario": "Norte", "Artista": "Airbag"},
 ]
 
-st.title("🎸 Matrix CR2026 - Estimador de 60 min")
-st.write("Cada banda seleccionada ocupa un rango de 1 hora desde su inicio oficial.")
+st.title("🎸 Matrix Profesional Cosquín Rock 2026")
+dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2])
 
-dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2], format_func=lambda x: f"Día {x}")
+# --- CONSTRUCCION DE LA MATRIZ EXTENDIDA ---
+bloques = generar_bloques_tiempo()
+escenarios = ["Norte", "Sur", "Montaña", "Boomerang", "La Casita del Blues", "Paraguay"]
 
-# --- FILTRADO ---
-df_full = pd.DataFrame(data_cr)
-df_dia = df_full[df_full["Día"] == dia_sel].drop(columns=["Día"]).reset_index(drop=True)
-escenarios = [c for c in df_dia.columns if c != "Horario"]
+# Crear matriz vacía
+matrix_df = pd.DataFrame("", index=bloques, columns=escenarios)
 
-# --- MATRIZ INTERACTIVA ---
-st.subheader("🛠️ Panel de Selección")
-st.info("Hacé doble clic en el nombre de la banda para marcarla (ej: 'Lali *').")
+# Llenar matriz con la data
+for item in raw_data:
+    if item["Día"] == dia_sel:
+        # Ubicar al artista en su horario exacto
+        if item["Horario"] in matrix_df.index:
+            matrix_df.at[item["Horario"], item["Escenario"]] = item["Artista"]
 
-# La matriz única donde el usuario marca directamente
-matriz_editable = st.data_editor(
-    df_dia,
-    hide_index=True,
+# Filtrar filas vacías para que la tabla no sea infinita (solo mostrar donde hay shows)
+# Pero mantenemos el orden cronológico
+matrix_df = matrix_df.loc[(matrix_df != "").any(axis=1)]
+
+st.subheader(f"📅 Grilla Interactiva - Día {dia_sel}")
+st.write("Doble clic en el nombre para marcarlo con un '*' o 'OK'.")
+
+# --- FRONT END: LA MATRIZ ---
+edited_matrix = st.data_editor(
+    matrix_df,
     use_container_width=True,
+    height=600,
     column_config={
-        "Horario": st.column_config.TextColumn("⏰ Inicio", disabled=True),
-        **{esc: st.column_config.TextColumn(disabled=False) for esc in escenarios}
+        "index": st.column_config.TextColumn("Horario", disabled=True),
     }
 )
 
-st.divider()
-st.subheader("📸 Grilla Final para Captura")
-st.write("Esta es tu selección final. Si hay dos bandas a la misma hora o con menos de 1h de diferencia, se solaparán.")
+st.success("📸 **¡Lista para captura!** Esta matriz respeta los desfasajes de tiempo (ej: 19:30 y 19:40 ya no están en la misma línea).")
 
-# Mostramos la misma matriz pero con un estilo más limpio para el Screenshot
-st.dataframe(matriz_editable, hide_index=True, use_container_width=True)
-
-st.caption("Nota: Los horarios corresponden al inicio de cada show. Se estima una duración de 60 minutos por artista para fines de planificación.")
+st.markdown("""
+<style>
+    [data-testid="stTable"] { font-size: 12px; }
+    .stDataFrame { border: 1px solid #4B0082; }
+</style>
+""", unsafe_allow_html=True)
