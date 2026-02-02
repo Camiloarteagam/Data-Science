@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use('Agg') # Obligatorio para servidores
+matplotlib.use('Agg') # Vital para que funcione en la nube
 import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
@@ -10,7 +10,7 @@ st.set_page_config(page_title="Matrix CR2026 Final", layout="wide")
 # --- GENERADOR DE BLOQUES DE TIEMPO ---
 def generar_tiempos():
     tiempos = []
-    for h in range(14, 27): 
+    for h in range(14, 27): # De 14:00 a 02:00
         for m in [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]:
             dh = h if h < 24 else h - 24
             tiempos.append(f"{dh:02d}:{m:02d}")
@@ -18,6 +18,7 @@ def generar_tiempos():
 
 # --- DATA COMPLETA ---
 raw_data = [
+    # DÍA 1
     {"Día": 1, "H": "14:10", "Esc": "Boomerang", "Art": "Microtul"},
     {"Día": 1, "H": "14:15", "Esc": "Montaña", "Art": "Chechi de Marcos"},
     {"Día": 1, "H": "14:15", "Esc": "La Casita del Blues", "Art": "Golo's Band"},
@@ -102,10 +103,9 @@ raw_data = [
 
 # --- FUNCIÓN PARA GENERAR IMAGEN ---
 def df_to_image(df, title):
-    fig, ax = plt.subplots(figsize=(12, len(df) * 0.4 + 1))
+    fig, ax = plt.subplots(figsize=(14, len(df) * 0.5 + 2))
     ax.axis('off')
     
-    # Estilo de la tabla
     tabla = ax.table(
         cellText=df.values,
         colLabels=df.columns,
@@ -113,19 +113,25 @@ def df_to_image(df, title):
         cellLoc='center',
         loc='center',
         colColours=["#ff4b4b"] * len(df.columns),
-        cellColours=[["#f0f2f6"] * len(df.columns)] * len(df)
+        cellColours=[["#ffffff"] * len(df.columns)] * len(df)
     )
     
     tabla.auto_set_font_size(False)
-    tabla.set_fontsize(10)
-    tabla.scale(1.2, 1.5)
+    tabla.set_fontsize(11)
+    tabla.scale(1.2, 1.8)
     
-    plt.title(title, fontsize=16, pad=20, fontweight='bold')
+    # Colorear los "OK" en verde en la imagen
+    for (row, col), cell in tabla.get_celld().items():
+        if row > 0: # Evitar encabezados
+            if "OK" in cell.get_text().get_text().upper():
+                cell.set_facecolor("#90ee90")
     
-    # Guardar en buffer
+    plt.title(title, fontsize=18, pad=30, fontweight='bold', color="#ff4b4b")
+    
     buf = io.BytesIO()
     plt.savefig(buf, format='png', bbox_inches='tight', dpi=150)
     buf.seek(0)
+    plt.close(fig)
     return buf
 
 # --- LÓGICA DE LA APP ---
@@ -133,7 +139,7 @@ st.title("🎸 Cosquín Rock 2026 - Matrix")
 
 dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2], format_func=lambda x: f"Día {x}")
 
-# Construcción de la matriz
+# Construcción de la matriz base
 tiempos = generar_tiempos()
 escenarios = ["Norte", "Sur", "Montaña", "Boomerang", "Paraguay", "La Casita del Blues"]
 matrix_df = pd.DataFrame("", index=tiempos, columns=escenarios)
@@ -143,30 +149,28 @@ for item in raw_data:
         if item["H"] in matrix_df.index:
             matrix_df.at[item["H"], item["Esc"]] = item["Art"]
 
-# Limpiar filas vacías
 matrix_df = matrix_df.loc[(matrix_df != "").any(axis=1)]
 
 # --- INTERFAZ ---
-st.subheader(f"Vista Previa - Día {dia_sel}")
+st.subheader(f"Armá tu Lineup - Día {dia_sel}")
+st.write("Escribe 'OK' junto al nombre del artista para marcarlo.")
 
-# Botón de descarga de imagen
-img_buffer = df_to_image(matrix_df, f"Cosquin Rock 2026 - Día {dia_sel}")
-st.download_button(
-    label="🔥 DESCARGAR COMO IMAGEN (PNG)",
-    data=img_buffer,
-    file_name=f"Lineup_Cosquin_Dia_{dia_sel}.png",
-    mime="image/png"
-)
-
-# Editor interactivo
-st.write("Puedes editar aquí antes de capturar si lo deseas:")
+# El editor usa una KEY única para que Streamlit mantenga los datos
 edited_df = st.data_editor(
     matrix_df,
     use_container_width=True,
-    height=600
+    height=600,
+    key=f"editor_dia_{dia_sel}"
 )
 
+# Botón para descargar la versión editada
+img_buffer = df_to_image(edited_df, f"Mi Lineup Cosquin Rock 2026 - Día {dia_sel}")
 
+st.download_button(
+    label="📸 DESCARGAR MI LINEUP (CON TUS MARCAS)",
+    data=img_buffer,
+    file_name=f"Mi_Lineup_Cosquin_Dia_{dia_sel}.png",
+    mime="image/png"
+)
 
-
-
+st.success("✅ **Tip:** Si escribes OK y descargas, la imagen ahora sí incluirá tus marcas en verde.")
