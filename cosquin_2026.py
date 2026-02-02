@@ -135,7 +135,7 @@ def df_to_image(df, title):
     return buf
 
 # --- LÓGICA DE LA APP ---
-st.title("🎸 Cosquín Rock 2026 - Matrix")
+st.title("🎸 Cosquín Rock 2026")
 
 dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2], format_func=lambda x: f"Día {x}")
 
@@ -153,7 +153,7 @@ matrix_df = matrix_df.loc[(matrix_df != "").any(axis=1)]
 
 # --- INTERFAZ ---
 st.subheader(f"Armá tu Lineup - Día {dia_sel}")
-st.write("Escribe 'OK' junto al nombre del artista para marcarlo.")
+st.write("Escribe 'OK' junto al nombre del artista")
 
 # El editor usa una KEY única para que Streamlit mantenga los datos
 edited_df = st.data_editor(
@@ -173,4 +173,3 @@ st.download_button(
     mime="image/png"
 )
 
-st.success("✅ **Tip:** Si escribes OK y descargas, la imagen ahora sí incluirá tus marcas en verde.")
