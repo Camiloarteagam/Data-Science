@@ -1,20 +1,21 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import io
 
 st.set_page_config(page_title="Matrix CR2026 Final", layout="wide")
 
 # --- GENERADOR DE BLOQUES DE TIEMPO ---
 def generar_tiempos():
     tiempos = []
-    for h in range(14, 27): # De 14:00 a 02:00
+    for h in range(14, 27): 
         for m in [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]:
             dh = h if h < 24 else h - 24
             tiempos.append(f"{dh:02d}:{m:02d}")
     return tiempos
 
-# --- DATA COMPLETA (Día 1 y 2) ---
+# --- DATA COMPLETA ---
 raw_data = [
-    # DÍA 1 - SÁBADO 14
     {"Día": 1, "H": "14:10", "Esc": "Boomerang", "Art": "Microtul"},
     {"Día": 1, "H": "14:15", "Esc": "Montaña", "Art": "Chechi de Marcos"},
     {"Día": 1, "H": "14:15", "Esc": "La Casita del Blues", "Art": "Golo's Band"},
@@ -60,7 +61,7 @@ raw_data = [
     {"Día": 1, "H": "00:40", "Esc": "Norte", "Art": "Caligaris"},
     {"Día": 1, "H": "00:40", "Esc": "Sur", "Art": "Viejas Locas"},
 
-    # DÍA 2 - DOMINGO 15
+    # DÍA 2
     {"Día": 2, "H": "14:15", "Esc": "La Casita del Blues", "Art": "Rosy Gomeez"},
     {"Día": 2, "H": "14:20", "Esc": "Sur", "Art": "Ainda"},
     {"Día": 2, "H": "14:20", "Esc": "Paraguay", "Art": "Wanda Jael"},
@@ -97,10 +98,40 @@ raw_data = [
     {"Día": 2, "H": "00:50", "Esc": "Sur", "Art": "Louta"},
 ]
 
-st.title("Cosquín Rock 2026")
+# --- FUNCIÓN PARA GENERAR IMAGEN ---
+def df_to_image(df, title):
+    fig, ax = plt.subplots(figsize=(12, len(df) * 0.4 + 1))
+    ax.axis('off')
+    
+    # Estilo de la tabla
+    tabla = ax.table(
+        cellText=df.values,
+        colLabels=df.columns,
+        rowLabels=df.index,
+        cellLoc='center',
+        loc='center',
+        colColours=["#ff4b4b"] * len(df.columns),
+        cellColours=[["#f0f2f6"] * len(df.columns)] * len(df)
+    )
+    
+    tabla.auto_set_font_size(False)
+    tabla.set_fontsize(10)
+    tabla.scale(1.2, 1.5)
+    
+    plt.title(title, fontsize=16, pad=20, fontweight='bold')
+    
+    # Guardar en buffer
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight', dpi=150)
+    buf.seek(0)
+    return buf
+
+# --- LÓGICA DE LA APP ---
+st.title("🎸 Cosquín Rock 2026 - Matrix")
+
 dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2], format_func=lambda x: f"Día {x}")
 
-# --- CONSTRUCCIÓN DE MATRIZ ---
+# Construcción de la matriz
 tiempos = generar_tiempos()
 escenarios = ["Norte", "Sur", "Montaña", "Boomerang", "Paraguay", "La Casita del Blues"]
 matrix_df = pd.DataFrame("", index=tiempos, columns=escenarios)
@@ -110,18 +141,38 @@ for item in raw_data:
         if item["H"] in matrix_df.index:
             matrix_df.at[item["H"], item["Esc"]] = item["Art"]
 
-# Filtrar solo filas con artistas
+# Limpiar filas vacías
 matrix_df = matrix_df.loc[(matrix_df != "").any(axis=1)]
 
-# --- FRONT END ---
-st.subheader(f"Día {dia_sel}")
-st.write("Marcar con 'OK' al lado de la banda")
+# --- INTERFAZ ---
+st.subheader(f"Vista Previa - Día {dia_sel}")
 
-st.data_editor(
-    matrix_df,
-    use_container_width=True,
-    height=800,
-    column_config={"index": st.column_config.TextColumn("Horario", disabled=True)}
+# Botón de descarga de imagen
+img_buffer = df_to_image(matrix_df, f"Cosquin Rock 2026 - Día {dia_sel}")
+st.download_button(
+    label="🔥 DESCARGAR COMO IMAGEN (PNG)",
+    data=img_buffer,
+    file_name=f"Lineup_Cosquin_Dia_{dia_sel}.png",
+    mime="image/png"
 )
 
-st.success("📸 **¡Lista para captura!** Todos los escenarios están incluidos con sus horarios reales.")
+# Editor interactivo
+st.write("Puedes editar aquí antes de capturar si lo deseas:")
+edited_df = st.data_editor(
+    matrix_df,
+    use_container_width=True,
+    height=600
+)
+
+st.info("💡 **Tip Pro:** La descarga genera una imagen limpia. Si quieres que incluya tus ediciones del cuadro de arriba, te recomiendo hacer una captura de pantalla normal.")
+
+---
+
+### ¿Cómo funciona esta opción?
+1.  **Matplotlib**: Crea una figura de Python "atrás de escena".
+2.  **Buffer de memoria**: En lugar de guardar un archivo en el disco (que a veces falla en la nube), guarda la imagen en la memoria RAM (`io.BytesIO`).
+3.  **Download Button**: Streamlit toma ese pedazo de memoria y se lo entrega al navegador como un archivo `.png` descargable.
+
+**Nota técnica**: He ajustado el tamaño de la imagen automáticamente según la cantidad de artistas que haya ese día para que no se vea aplastada.
+
+¿Te gustaría que le añada algún color específico a cada escenario en la imagen descargable?
