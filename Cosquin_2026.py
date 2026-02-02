@@ -3,9 +3,9 @@ import pandas as pd
 
 st.set_page_config(page_title="Cosquín Rock 2026 - Matrix", layout="wide")
 
-# --- DATOS OFICIALES ---
-# (Se mantiene tu lista data_cr igual)
+# --- DATOS EXTRAÍDOS DE TUS IMÁGENES ---
 data_cr = [
+    # DÍA 1
     {"Día": 1, "Horario": "14:15", "Norte": "", "Sur": "", "Montaña": "Chechi de Marcos", "Boomerang": "", "Blues": "Golo's Band"},
     {"Día": 1, "Horario": "14:30", "Norte": "Kill Flora", "Sur": "Fantasmagoría", "Montaña": "", "Boomerang": "", "Blues": ""},
     {"Día": 1, "Horario": "14:50", "Norte": "", "Sur": "", "Montaña": "", "Boomerang": "1915", "Blues": ""},
@@ -14,28 +14,35 @@ data_cr = [
     {"Día": 1, "Horario": "15:50", "Norte": "", "Sur": "", "Montaña": "Bersuit Vergarabat", "Boomerang": "", "Blues": ""},
     {"Día": 1, "Horario": "16:30", "Norte": "El Zar", "Sur": "Emi", "Montaña": "", "Boomerang": "Girl Ultra", "Blues": ""},
     {"Día": 1, "Horario": "17:10", "Norte": "", "Sur": "", "Montaña": "Marilina Bertoldi", "Boomerang": "", "Blues": ""},
-    {"Día": 1, "Horario": "17:50", "Norte": "Turf", "Sur": "Cruzando el Charco", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Día": 1, "Horario": "18:40", "Norte": "", "Sur": "", "Montaña": "El Kuelgue", "Boomerang": "", "Blues": ""},
+    {"Día": 1, "Horario": "17:50", "Norte": "Turf", "Sur": "Cruzando el Charco", "Montaña": "", "Boomerang": "Hermanos Gutiérrez", "Blues": ""},
+    {"Día": 1, "Horario": "18:20", "Norte": "", "Sur": "", "Montaña": "", "Boomerang": "Indios", "Blues": ""},
+    {"Día": 1, "Horario": "18:40", "Norte": "", "Sur": "", "Montaña": "El Kuelgue", "Boomerang": "", "Blues": "Misty Soul Choir"},
+    {"Día": 1, "Horario": "19:20", "Norte": "", "Sur": "", "Montaña": "", "Boomerang": "Estelares", "Blues": ""},
     {"Día": 1, "Horario": "19:30", "Norte": "Dillom", "Sur": "", "Montaña": "", "Boomerang": "", "Blues": ""},
     {"Día": 1, "Horario": "19:40", "Norte": "", "Sur": "Ciro y Los Persas", "Montaña": "", "Boomerang": "", "Blues": ""},
+    {"Día": 1, "Horario": "20:30", "Norte": "", "Sur": "", "Montaña": "", "Boomerang": "", "Blues": "Wayra Iglesias"},
     {"Día": 1, "Horario": "20:40", "Norte": "", "Sur": "", "Montaña": "Cuarteto de Nos", "Boomerang": "Abel Pintos", "Blues": ""},
-    {"Día": 1, "Horario": "21:20", "Norte": "Babasónicos", "Sur": "", "Montaña": "", "Boomerang": "", "Blues": ""},
+    {"Día": 1, "Horario": "21:20", "Norte": "Babasonicos", "Sur": "", "Montaña": "", "Boomerang": "", "Blues": ""},
     {"Día": 1, "Horario": "21:40", "Norte": "", "Sur": "La Vela Puerca", "Montaña": "", "Boomerang": "", "Blues": ""},
     {"Día": 1, "Horario": "22:40", "Norte": "", "Sur": "", "Montaña": "Franz Ferdinand", "Boomerang": "", "Blues": ""},
     {"Día": 1, "Horario": "23:20", "Norte": "Lali", "Sur": "Las Pelotas", "Montaña": "", "Boomerang": "", "Blues": ""},
     {"Día": 1, "Horario": "00:00", "Norte": "", "Sur": "", "Montaña": "The Chemical Brothers", "Boomerang": "", "Blues": ""},
-    {"Día": 1, "Horario": "00:40", "Norte": "Caligaris", "Sur": "Viejas Locas", "Montaña": "", "Boomerang": "", "Blues": ""},
+    {"Día": 1, "Horario": "00:40", "Norte": "Caligaris", "Sur": "Viejas Locas x Fachi y Abel", "Montaña": "", "Boomerang": "", "Blues": ""},
     # DÍA 2
     {"Día": 2, "Horario": "14:20", "Norte": "", "Sur": "Ainda", "Montaña": "", "Paraguay": "Wanda Jael", "Blues": ""},
-    {"Día": 2, "Horario": "14:30", "Norte": "Sofi Mora", "Sur": "", "Montaña": "Renzo Leali", "Paraguay": "", "Blues": ""},
+    {"Día": 2, "Horario": "14:30", "Norte": "Sofi Mora", "Sur": "", "Montaña": "Renzo Leali", "Paraguay": "", "Blues": "Rosy Gomeez"},
     {"Día": 2, "Horario": "15:10", "Norte": "", "Sur": "Kapanga", "Montaña": "", "Paraguay": "T&K", "Blues": ""},
     {"Día": 2, "Horario": "15:20", "Norte": "Blair", "Sur": "", "Montaña": "", "Paraguay": "", "Blues": ""},
+    {"Día": 2, "Horario": "16:25", "Norte": "", "Sur": "Pappo x Juanse", "Montaña": "", "Paraguay": "", "Blues": ""},
     {"Día": 2, "Horario": "16:30", "Norte": "Gauchito Club", "Sur": "", "Montaña": "", "Paraguay": "", "Blues": ""},
     {"Día": 2, "Horario": "17:45", "Norte": "", "Sur": "El Plan de la Mariposa", "Montaña": "", "Paraguay": "", "Blues": "Cordelia's Blues"},
     {"Día": 2, "Horario": "17:50", "Norte": "Bandalos Chinos", "Sur": "", "Montaña": "", "Paraguay": "", "Blues": ""},
-    {"Día": 2, "Horario": "19:10", "Norte": "Fito Páez", "Sur": "", "Montaña": "", "Paraguay": "", "Blues": ""},
+    {"Día": 2, "Horario": "18:20", "Norte": "", "Sur": "", "Montaña": "", "Paraguay": "Devendra Banhart", "Blues": ""},
+    {"Día": 2, "Horario": "18:30", "Norte": "", "Sur": "", "Montaña": "Silvestre y La Naranja", "Paraguay": "", "Blues": ""},
+    {"Día": 2, "Horario": "19:10", "Norte": "Fito Paez", "Sur": "", "Montaña": "", "Paraguay": "", "Blues": ""},
     {"Día": 2, "Horario": "19:40", "Norte": "", "Sur": "Divididos", "Montaña": "", "Paraguay": "", "Blues": ""},
     {"Día": 2, "Horario": "20:20", "Norte": "", "Sur": "", "Montaña": "Morat", "Paraguay": "", "Blues": ""},
+    {"Día": 2, "Horario": "20:30", "Norte": "", "Sur": "", "Montaña": "", "Paraguay": "Marky Ramone", "Blues": ""},
     {"Día": 2, "Horario": "20:55", "Norte": "Airbag", "Sur": "", "Montaña": "", "Paraguay": "", "Blues": ""},
     {"Día": 2, "Horario": "21:30", "Norte": "", "Sur": "Trueno", "Montaña": "", "Paraguay": "", "Blues": ""},
     {"Día": 2, "Horario": "22:20", "Norte": "", "Sur": "", "Montaña": "Las Pastillas del Abuelo", "Paraguay": "", "Blues": ""},
@@ -45,76 +52,52 @@ data_cr = [
     {"Día": 2, "Horario": "00:50", "Norte": "", "Sur": "Louta", "Montaña": "", "Paraguay": "", "Blues": ""},
 ]
 
-st.title("🎸 Simulador Interactivo Cosquín Rock 2026")
+st.title("🎸 Matrix Simulator: Cosquín Rock 2026")
 dia_sel = st.sidebar.radio("Seleccioná el día", [1, 2])
 
-# 1. Preparar el DataFrame base
-df_full = pd.DataFrame(data_cr)
-df_dia = df_full[df_full["Día"] == dia_sel].drop(columns=["Día"]).reset_index(drop=True)
+# Preparar matriz de visualización
+df = pd.DataFrame(data_cr)
+df_matrix = df[df["Día"] == dia_sel].drop(columns=["Día"]).reset_index(drop=True)
 
-# 2. Crear una matriz paralela de selección (booleana)
-# Esta matriz rastrea qué celdas están seleccionadas
-if f"picks_{dia_sel}" not in st.session_state:
-    st.session_state[f"picks_{dia_sel}"] = pd.DataFrame(False, index=df_dia.index, columns=df_dia.columns[1:])
+# Obtener lista de artistas únicos para el selector (sin vacíos)
+artistas_dia = df_matrix.melt(id_vars=["Horario"], var_name="Escenario", value_name="Artista")
+artistas_dia = artistas_dia[artistas_dia["Artista"] != ""].sort_values(["Horario", "Escenario"])
+artistas_opciones = artistas_dia.apply(lambda x: f"{x['Horario']} - {x['Artista']} ({x['Escenario']})", axis=1).tolist()
 
-st.subheader(f"📅 Matriz de Selección - Día {dia_sel}")
-st.write("Selecciona los artistas directamente en la tabla (Haz doble clic o usa la barra espaciadora en las celdas con nombres).")
+# --- FRONT-END ---
+st.subheader(f"📅 Grilla Completa - Día {dia_sel}")
+st.write("Consulta los horarios abajo y selecciona tus bandas favoritas en el panel lateral o en el buscador:")
 
-# 3. Mostrar la matriz como editor. 
-# Para que el usuario vea nombres pero edite booleanos, mostramos la matriz de nombres 
-# y permitimos la edición sobre ella.
-edited_matrix = st.data_editor(
-    df_dia,
-    hide_index=True,
-    use_container_width=True,
-    column_config={
-        "Horario": st.column_config.TextColumn(disabled=True),
-        # Configuramos las columnas de escenarios como Checkboxes que muestran el texto
-        "Norte": st.column_config.CheckboxColumn(),
-        "Sur": st.column_config.CheckboxColumn(),
-        "Montaña": st.column_config.CheckboxColumn(),
-        "Boomerang": st.column_config.CheckboxColumn(),
-        "Paraguay": st.column_config.CheckboxColumn(),
-        "Blues": st.column_config.CheckboxColumn(),
-    }
-)
+# Mostrar matriz (Solo lectura para evitar el error de booleano)
+st.dataframe(df_matrix, hide_index=True, use_container_width=True)
 
 st.divider()
 
-# 4. Procesar la selección
-# Comparamos la matriz original (nombres) con la editada (booleanos)
-itinerario_lista = []
+# Selección mediante multiselect (Es la forma más robusta y sin errores)
+st.subheader("✅ Tu Itinerario")
+seleccionados = st.multiselect(
+    "Busca o selecciona los artistas que quieres ver:",
+    options=artistas_opciones,
+    help="Puedes escribir el nombre de la banda para encontrarla rápido."
+)
 
-for row_idx in range(len(edited_matrix)):
-    hora = edited_matrix.iloc[row_idx]["Horario"]
-    for esc in edited_matrix.columns[1:]:
-        # Si el valor en la celda es True (fue seleccionado)
-        val = edited_matrix.iloc[row_idx][esc]
-        if val is True:
-            # Recuperamos el nombre del artista de la data original
-            artista_original = df_dia.iloc[row_idx][esc]
-            if artista_original != "":
-                itinerario_lista.append({
-                    "Horario": hora,
-                    "Escenario": esc,
-                    "Artista": artista_original
-                })
-
-# 5. Mostrar resultado
-st.subheader("📋 Tu Itinerario Confirmado")
-if itinerario_lista:
-    res_df = pd.DataFrame(itinerario_lista)
+if seleccionados:
+    # Convertir selección en DataFrame para mostrar tabla limpia
+    itinerario_data = []
+    for s in seleccionados:
+        hora_banda, escenario_raw = s.split(" (")
+        hora, banda = hora_banda.split(" - ")
+        escenario = escenario_raw.replace(")", "")
+        itinerario_data.append({"Horario": hora, "Artista": banda, "Escenario": escenario})
     
-    # Check de solapamientos
-    duplicados = res_df.duplicated(subset=['Horario'], keep=False)
+    itinerario_df = pd.DataFrame(itinerario_data).sort_values("Horario")
     
-    if duplicados.any():
-        st.warning("⚠️ ¡Ojo! Tienes artistas seleccionados a la misma hora.")
+    # Mostrar el itinerario
+    st.success("🔥 Itinerario confirmado")
+    st.table(itinerario_df)
     
-    st.table(res_df)
-    
-    # Botón para limpiar (opcional)
-    if st.button("Limpiar Selección"):
-        st.rerun()
+    # Detectar solapamientos
+    if itinerario_df["Horario"].duplicated().any():
+        st.warning("⚠️ Tienes artistas seleccionados a la misma hora. ¡Vas a tener que correr!")
 else:
-    st.info("Haz clic en los nombres de los artistas en la tabla de arriba para armar tu ruta.")
+    st.info("💡 Selecciona bandas arriba para armar tu ruta personalizada.")
