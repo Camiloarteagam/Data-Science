@@ -115,7 +115,7 @@ matrix_df = matrix_df.loc[(matrix_df != "").any(axis=1)]
 
 # --- FRONT END ---
 st.subheader(f"Día {dia_sel}")
-st.write("Escribí '*' o 'OK' al lado del nombre para marcar tus bandas. Los horarios respetan los desfasajes exactos.")
+st.write("Doble click y escribir el artista que van a ver")
 
 st.data_editor(
     matrix_df,
