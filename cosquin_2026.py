@@ -167,7 +167,7 @@ edited_df = st.data_editor(
 img_buffer = df_to_image(edited_df, f"Mi Lineup Cosquin Rock 2026 - Día {dia_sel}")
 
 st.download_button(
-    label="📸 DESCARGAR MI LINEUP (CON TUS MARCAS)",
+    label="📸 DESCARGAR IMAGEN",
     data=img_buffer,
     file_name=f"Mi_Lineup_Cosquin_Dia_{dia_sel}.png",
     mime="image/png"
