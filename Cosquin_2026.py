@@ -1,6 +1,8 @@
+import matplotlib
+matplotlib.use('Agg') # Obligatorio para servidores
+import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import io
 
 st.set_page_config(page_title="Matrix CR2026 Final", layout="wide")
