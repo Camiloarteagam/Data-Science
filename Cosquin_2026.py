@@ -1,95 +1,55 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Simulador Cosquín Rock 2026", layout="wide")
+st.set_page_config(page_title="CR2026 Itinerario", layout="wide")
 
-# --- BASE DE DATOS BASADA EN LAS IMÁGENES OFICIALES ---
+# --- DATA RESUMIDA (Basada en tus imágenes oficiales) ---
 data_cr = [
-    # DÍA 1 (Sábado 14)
-    {"Horario": "14:15", "Norte": "", "Sur": "", "Montaña": "Chechi de Marcos", "Boomerang": "", "Blues": "Golo's Band"},
-    {"Horario": "14:30", "Norte": "Kill Flora", "Sur": "Fantasmagoría", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Horario": "15:20", "Norte": "Eruca Sativa", "Sur": "La Mississippi", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Horario": "16:30", "Norte": "El Zar", "Sur": "Emi", "Montaña": "", "Boomerang": "Girl Ultra", "Blues": ""},
-    {"Horario": "17:50", "Norte": "Turf", "Sur": "Cruzando el Charco", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Horario": "19:30", "Norte": "Dillom", "Sur": "", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Horario": "19:40", "Norte": "", "Sur": "Ciro y Los Persas", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Horario": "20:40", "Norte": "", "Sur": "", "Montaña": "Cuarteto de Nos", "Boomerang": "Abel Pintos", "Blues": ""},
-    {"Horario": "21:20", "Norte": "Babasónicos", "Sur": "", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Horario": "21:40", "Norte": "", "Sur": "La Vela Puerca", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Horario": "22:40", "Norte": "", "Sur": "", "Montaña": "Franz Ferdinand", "Boomerang": "", "Blues": ""},
-    {"Horario": "23:20", "Norte": "Lali", "Sur": "Las Pelotas", "Montaña": "", "Boomerang": "", "Blues": ""},
-    {"Horario": "00:00", "Norte": "", "Sur": "", "Montaña": "The Chemical Brothers", "Boomerang": "", "Blues": ""},
-    {"Horario": "00:40", "Norte": "Caligaris", "Sur": "Viejas Locas", "Montaña": "", "Boomerang": "", "Blues": ""},
+    {"Día": 1, "Horario": "14:30", "Norte": "Kill Flora", "Sur": "Fantasmagoría", "Montaña": ""},
+    {"Día": 1, "Horario": "15:20", "Norte": "Eruca Sativa", "Sur": "La Mississippi", "Montaña": ""},
+    {"Día": 1, "Horario": "16:30", "Norte": "El Zar", "Sur": "Emi", "Montaña": ""},
+    {"Día": 1, "Horario": "17:50", "Norte": "Turf", "Sur": "Cruzando el Charco", "Montaña": ""},
+    {"Día": 1, "Horario": "19:30", "Norte": "Dillom", "Sur": "Ciro y Los Persas (19:40)", "Montaña": ""},
+    {"Día": 1, "Horario": "21:20", "Norte": "Babasónicos", "Sur": "La Vela Puerca (21:40)", "Montaña": "Cuarteto de Nos (20:40)"},
+    {"Día": 1, "Horario": "23:20", "Norte": "Lali", "Sur": "Las Pelotas", "Montaña": "Franz Ferdinand (22:40)"},
+    {"Día": 1, "Horario": "00:40", "Norte": "Caligaris", "Sur": "Viejas Locas", "Montaña": "The Chemical Brothers (00:00)"},
+    # Día 2
+    {"Día": 2, "Horario": "16:30", "Norte": "Gauchito Club", "Sur": "Pappo x Juanse", "Montaña": "Luck Ra (16:50)"},
+    {"Día": 2, "Horario": "17:50", "Norte": "Bandalos Chinos", "Sur": "El Plan de la Mariposa", "Montaña": ""},
+    {"Día": 2, "Horario": "19:10", "Norte": "Fito Páez", "Sur": "Divididos (19:40)", "Montaña": "Nicki Nicole (19:40)"},
+    {"Día": 2, "Horario": "21:40", "Norte": "Los Piojos", "Sur": "Trueno (21:30)", "Montaña": "Deadmau5 (22:40)"},
 ]
 
-st.title("🎸 Simulador de Itinerario: Cosquín Rock 2026")
-st.markdown("### Selecciona tus artistas directamente en la grilla")
-st.info("💡 **Instrucciones:** Haz doble clic o presiona 'Espacio' sobre el nombre de un artista para marcarlo/desmarcarlo.")
+st.title("🎸 Cosquín Rock 2026: Mi Itinerario")
 
-# Creamos la matriz de nombres
-df_original = pd.DataFrame(data_cr)
-escenarios = ["Norte", "Sur", "Montaña", "Boomerang", "Blues"]
+# 1. Filtro rápido
+dia = st.sidebar.radio("Seleccioná el Día", [1, 2])
+df = pd.DataFrame(data_cr)
+df_dia = df[df["Día"] == dia].drop(columns=["Día"])
 
-# Inicializamos el estado de selección en la sesión si no existe
-if "seleccionados" not in st.session_state:
-    st.session_state.seleccionados = set()
+# 2. Visualización (La Grilla)
+st.subheader("📊 Grilla de Horarios")
+st.table(df_dia) # Tabla limpia para ver cruces
 
-# Función para formatear el texto de la celda (Nombre + Check visual)
-def format_cell(artista, horario, escenario):
-    if not artista:
-        return ""
-    key = f"{horario}|{escenario}|{artista}"
-    icon = "✅ SELECCIONADO" if key in st.session_state.seleccionados else "⬜ (Click para elegir)"
-    return f"{artista}\n{icon}"
-
-# Creamos el DataFrame que se mostrará en el editor
-df_display = df_original.copy()
-for esc in escenarios:
-    df_display[esc] = df_display.apply(lambda x: format_cell(x[esc], x["Horario"], esc), axis=1)
-
-# --- EDITOR DE DATOS INTERACTIVO ---
-edited_df = st.data_editor(
-    df_display,
-    hide_index=True,
-    use_container_width=True,
-    column_config={
-        "Horario": st.column_config.TextColumn(disabled=True),
-        **{esc: st.column_config.TextColumn(width="medium") for esc in escenarios}
-    },
-    key="editor_grilla"
-)
-
-# Lógica para actualizar la selección basándose en los cambios del editor
-# (Se detecta qué celda fue "editada" por el usuario)
-if st.session_state.editor_grilla:
-    edits = st.session_state.editor_grilla.get("edited_rows", {})
-    for row_idx, changes in edits.items():
-        for esc, val in changes.items():
-            horario = df_original.iloc[row_idx]["Horario"]
-            artista = df_original.iloc[row_idx][esc]
-            if artista:
-                key = f"{horario}|{esc}|{artista}"
-                if key in st.session_state.seleccionados:
-                    st.session_state.seleccionados.remove(key)
-                else:
-                    st.session_state.seleccionados.add(key)
-    st.rerun()
-
-# --- MOSTRAR EL ITINERARIO FINAL ---
+# 3. Selección (El "Cerebro")
 st.divider()
-st.subheader("📋 Tu Hoja de Ruta")
+artistas_lista = df_dia.melt(id_vars="Horario", var_name="Escenario", value_name="Artista")
+artistas_lista = artistas_lista[artistas_lista["Artista"] != ""].sort_values("Horario")
 
-if st.session_state.seleccionados:
-    itinerario = []
-    for item in st.session_state.seleccionados:
-        h, e, a = item.split("|")
-        itinerario.append({"Hora": h, "Escenario": e, "Artista": a})
+# Creamos las opciones para el buscador
+opciones = artistas_lista.apply(lambda x: f"{x['Horario']} - {x['Artista']} ({x['Escenario']})", axis=1).tolist()
+
+seleccion = st.multiselect("🔍 Buscá y agregá tus bandas:", opciones)
+
+# 4. Resultado Final
+if seleccion:
+    st.subheader("📋 Tu Hoja de Ruta")
+    # Convertimos a tabla para que quede prolijo
+    items = [s.split(" - ") for s in seleccion]
+    itinerario_final = pd.DataFrame(items, columns=["Hora", "Banda"]).sort_values("Hora")
+    st.success("¡Itinerario listo!")
+    st.dataframe(itinerario_final, use_container_width=True, hide_index=True)
     
-    final_df = pd.DataFrame(itinerario).sort_values("Hora")
-    st.table(final_df)
-    
-    # Alerta de choques horarias
-    if final_df["Hora"].duplicated().any():
-        st.error("⚠️ Tienes artistas que se pisan el horario. Revisa los escenarios Norte, Sur y Montaña.")
-else:
-    st.write("Aún no has seleccionado ningún artista.")
+    # Alerta de choques
+    if itinerario_final["Hora"].duplicated().any():
+        st.warning("⚠️ Tenés bandas que se pisan el horario. ¡Vas a tener que elegir!")
